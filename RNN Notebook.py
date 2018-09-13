@@ -9,10 +9,18 @@ import re
 import random
 import unidecode
 import time
+import unicodedata
+from __future__ import unicode_literals
 
-path_to_file = tf.keras.utils.get_file('shakespeare.txt', 'https://storage.googleapis.com/yashkatariya/shakespeare.txt')
+path_to_file = tf.keras.utils.get_file('goodfile.txt', 'https://raw.githubusercontent.com/ChrisHarrold/ML-AI-Code/master/goodfile.txt')
 
-text = unidecode.unidecode(open(path_to_file).read())
+# Remove non-ascii from the string of the training text. If this will impact your generated text (many punctuation marks)
+# DO NOT USE THIS - also you are almost 100% likely to get unicode errors unless you use the original training data
+
+trainingtext = open(path_to_file).read()
+trainingtext = ''.join(i for i in trainingtext if ord(i)<128)
+
+text = unidecode.unidecode(trainingtext)
 # length of text is the number of characters in it
 print (len(text))
 
