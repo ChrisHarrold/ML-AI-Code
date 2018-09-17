@@ -1,4 +1,4 @@
-# Import TensorFlow >= 1.9 and enable eager execution
+`# Import TensorFlow >= 1.9 and enable eager execution
 import tensorflow as tf
 
 # Note: Once you enable eager execution, it cannot be disabled. 
@@ -13,6 +13,25 @@ import unicodedata
 from __future__ import unicode_literals
 import os, re
 
+#####
+#  Experiment with these values:
+#####
+# number of characters to generate
+num_generate = 1000
+
+# You can change the start string to experiment
+start_string = 'R'
+
+# low temperatures results in more predictable text.
+# higher temperatures results in more surprising text
+# experiment to find the best setting
+temperature = .7
+
+#EPOCHS are loosly the number of times it will run the text through the model
+# The more you do this the "smarter" the model gets. Numbers of 1000's or even 
+#10's of 1000's are not uncommon - lower numbers make your AI not very smart
+EPOCHS = 10
+
 #Keras Utils have a nasty tendancy to "cache" the file for training. Really annoying 
 #if you are trying to get real result. This little bit flushes out the cache before it checks:
 def purge(dir, pattern):
@@ -25,8 +44,8 @@ purge(kpath, kpattern)
 
 
 #this should simplify defining the keras utils path and file
-thefile = 'goodfile.txt'
-thepath = 'https://raw.githubusercontent.com/ChrisHarrold/ML-AI-Code/master/goodfile.txt'
+thefile = 'realybadtrainingtext.txt'
+thepath = 'https://raw.githubusercontent.com/ChrisHarrold/ML-AI-Code/master/realybadtrainingtext.txt'
 
 path_to_file = tf.keras.utils.get_file(thefile, thepath)
 #this isn't needed anymore, but the file ALWAYS comes from the local /root/.keras/datafiles dir
@@ -38,7 +57,8 @@ trainingtext = open(path_to_file).read()
 trainingtext = ''.join(i for i in trainingtext if ord(i)<128)
 text = unidecode.unidecode(trainingtext)
 # length of text is the number of characters in it
-print ("The text is: "+ len(text))
+print ("The text is this many characters:")
+print (len(text))
 #not sure the purge is working? Uncomment to see what you are getting!
 #print (text)
 
@@ -67,6 +87,9 @@ BATCH_SIZE = 64
 # buffer size to shuffle our dataset
 BUFFER_SIZE = 10000
 
+# empty string to store our results
+text_generated = ''
+#intitialize our training corpus arrays
 input_text  = []
 target_text = []
 
@@ -92,6 +115,7 @@ class Model(tf.keras.Model):
 
     self.embedding = tf.keras.layers.Embedding(vocab_size, embedding_dim)
 
+    #Check for GPU and initialize a GPU-based model or not
     if tf.test.is_gpu_available():
       self.gru = tf.keras.layers.CuDNNGRU(self.units, 
                                           return_sequences=True, 
@@ -137,8 +161,6 @@ def loss_function(real, preds):
 
 # Training step
 
-EPOCHS = 10
-
 for epoch in range(EPOCHS):
     start = time.time()
     
@@ -168,27 +190,13 @@ for epoch in range(EPOCHS):
     #being undefined with the crappy training file. Commented out since it is just
     # a counter and replaced with a simpler one that won't error
     #print ('Epoch {} Loss {:.4f}'.format(epoch+1, loss))
-    print ('Epoch {} took {} seconds\n'.format(epoch+1),(time.time() - start))
+    print ('Epoch took {} seconds\n'.format(time.time() - start))
     
 # Evaluation step(generating text using the model learned)
-
-# number of characters to generate
-num_generate = 1000
-
-# You can change the start string to experiment
-start_string = 'This is what I came up with' + \n
 
 # converting our start string to numbers(vectorizing!) 
 input_eval = [char2idx[s] for s in start_string]
 input_eval = tf.expand_dims(input_eval, 0)
-
-# empty string to store our results
-text_generated = ''
-
-# low temperatures results in more predictable text.
-# higher temperatures results in more surprising text
-# experiment to find the best setting
-temperature = .7
 
 # hidden state shape == (batch_size, number of rnn units); here batch size == 1
 hidden = [tf.zeros((1, units))]
@@ -206,3 +214,4 @@ for i in range(num_generate):
     text_generated += idx2char[predicted_id]
 
 print (start_string + text_generated)
+`
