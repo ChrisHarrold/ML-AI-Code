@@ -1,4 +1,4 @@
-`# Import TensorFlow >= 1.9 and enable eager execution
+# Import TensorFlow >= 1.9 and enable eager execution
 import tensorflow as tf
 
 # Note: Once you enable eager execution, it cannot be disabled. 
@@ -20,7 +20,8 @@ import os, re
 num_generate = 1000
 
 # You can change the start string to experiment
-start_string = 'R'
+# PS, Whatever you specify here, letter or full string, MUST BE IN YOUR TRAINING FILE
+start_string = 'A'
 
 # low temperatures results in more predictable text.
 # higher temperatures results in more surprising text
@@ -214,4 +215,3 @@ for i in range(num_generate):
     text_generated += idx2char[predicted_id]
 
 print (start_string + text_generated)
-`
