@@ -13,12 +13,23 @@ import unicodedata
 from __future__ import unicode_literals
 import os, re
 
+<<<<<<< HEAD
 #Keras Utils have a nasty tendancy to "cache" the file for training. Really annoying 
 #if you are trying to get real result. This little bit flushes out the cache before it checks:
 def purge(dir, pattern):
     for f in os.listdir(dir):
         if re.search(pattern, f):
             os.remove(os.path.join(dir, f))
+=======
+# low temperatures results in more predictable text.
+# higher temperatures results in more surprising text
+# experiment to find the best setting
+temperature = 1.0
+filename = ""
+filepath = ""
+
+path_to_file = tf.keras.utils.get_file('goodfile.txt', 'https://raw.githubusercontent.com/ChrisHarrold/ML-AI-Code/master/goodfile.txt')
+>>>>>>> c26860c54f337285b0812c10efe4fc79bf063cde
 
 
 thefile = 'goodfile.txt'
@@ -179,10 +190,13 @@ input_eval = tf.expand_dims(input_eval, 0)
 # empty string to store our results
 text_generated = ''
 
+<<<<<<< HEAD
 # low temperatures results in more predictable text.
 # higher temperatures results in more surprising text
 # experiment to find the best setting
 temperature = .7
+=======
+>>>>>>> c26860c54f337285b0812c10efe4fc79bf063cde
 
 # hidden state shape == (batch_size, number of rnn units); here batch size == 1
 hidden = [tf.zeros((1, units))]
