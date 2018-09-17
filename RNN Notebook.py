@@ -12,6 +12,13 @@ import time
 import unicodedata
 from __future__ import unicode_literals
 
+# low temperatures results in more predictable text.
+# higher temperatures results in more surprising text
+# experiment to find the best setting
+temperature = 1.0
+filename = ""
+filepath = ""
+
 path_to_file = tf.keras.utils.get_file('goodfile.txt', 'https://raw.githubusercontent.com/ChrisHarrold/ML-AI-Code/master/goodfile.txt')
 
 # Remove non-ascii from the string of the training text. If this will impact your generated text (many punctuation marks)
@@ -163,10 +170,6 @@ input_eval = tf.expand_dims(input_eval, 0)
 # empty string to store our results
 text_generated = ''
 
-# low temperatures results in more predictable text.
-# higher temperatures results in more surprising text
-# experiment to find the best setting
-temperature = 1.0
 
 # hidden state shape == (batch_size, number of rnn units); here batch size == 1
 hidden = [tf.zeros((1, units))]
