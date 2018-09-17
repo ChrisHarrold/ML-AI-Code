@@ -11,18 +11,33 @@ import unidecode
 import time
 import unicodedata
 from __future__ import unicode_literals
+import os, re
 
-path_to_file = tf.keras.utils.get_file('goodfile.txt', 'https://raw.githubusercontent.com/ChrisHarrold/ML-AI-Code/master/goodfile.txt')
+#Keras Utils have a nasty tendancy to "cache" the file for training. Really annoying 
+#if you are trying to get real result. This little bit flushes out the cache before it checks:
+def purge(dir, pattern):
+    for f in os.listdir(dir):
+        if re.search(pattern, f):
+            os.remove(os.path.join(dir, f))
 
-# Remove non-ascii from the string of the training text. If this will impact your generated text (many punctuation marks)
-# DO NOT USE THIS - also you are almost 100% likely to get unicode errors unless you use the original training data
 
+thefile = 'goodfile.txt'
+thepath = 'https://raw.githubusercontent.com/ChrisHarrold/ML-AI-Code/master/goodfile.txt'
+kpath = "/root/.keras/datasets/"
+kpattern = ".txt"
+purge(kpath, kpattern)
+
+
+path_to_file = tf.keras.utils.get_file(thefile, thepath)
+print (path_to_file)
 trainingtext = open(path_to_file).read()
 trainingtext = ''.join(i for i in trainingtext if ord(i)<128)
 
 text = unidecode.unidecode(trainingtext)
 # length of text is the number of characters in it
 print (len(text))
+#not sure the purge is working? Uncomment to see what you are getting!
+#print (text)
 
 # unique contains all the unique characters in the file
 unique = sorted(set(text))
@@ -145,8 +160,8 @@ for epoch in range(EPOCHS):
               print ('Epoch {} Batch {} Loss {:.4f}'.format(epoch+1,
                                                             batch,
                                                             loss))
-    
-    print ('Epoch {} Loss {:.4f}'.format(epoch+1, loss))
+
+    #print ('Epoch {} Loss {:.4f}'.format(epoch+1, loss))
     print('Time taken for 1 epoch {} sec\n'.format(time.time() - start))
     
 # Evaluation step(generating text using the model learned)
@@ -155,7 +170,8 @@ for epoch in range(EPOCHS):
 num_generate = 1000
 
 # You can change the start string to experiment
-start_string = 'Q'
+start_string = 'This is'
+
 # converting our start string to numbers(vectorizing!) 
 input_eval = [char2idx[s] for s in start_string]
 input_eval = tf.expand_dims(input_eval, 0)
@@ -166,7 +182,7 @@ text_generated = ''
 # low temperatures results in more predictable text.
 # higher temperatures results in more surprising text
 # experiment to find the best setting
-temperature = 1.0
+temperature = .7
 
 # hidden state shape == (batch_size, number of rnn units); here batch size == 1
 hidden = [tf.zeros((1, units))]
