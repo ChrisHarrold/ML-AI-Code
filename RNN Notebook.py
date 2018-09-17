@@ -13,40 +13,32 @@ import unicodedata
 from __future__ import unicode_literals
 import os, re
 
-<<<<<<< HEAD
 #Keras Utils have a nasty tendancy to "cache" the file for training. Really annoying 
 #if you are trying to get real result. This little bit flushes out the cache before it checks:
 def purge(dir, pattern):
     for f in os.listdir(dir):
         if re.search(pattern, f):
             os.remove(os.path.join(dir, f))
-=======
-# low temperatures results in more predictable text.
-# higher temperatures results in more surprising text
-# experiment to find the best setting
-temperature = 1.0
-filename = ""
-filepath = ""
-
-path_to_file = tf.keras.utils.get_file('goodfile.txt', 'https://raw.githubusercontent.com/ChrisHarrold/ML-AI-Code/master/goodfile.txt')
->>>>>>> c26860c54f337285b0812c10efe4fc79bf063cde
-
-
-thefile = 'goodfile.txt'
-thepath = 'https://raw.githubusercontent.com/ChrisHarrold/ML-AI-Code/master/goodfile.txt'
 kpath = "/root/.keras/datasets/"
 kpattern = ".txt"
 purge(kpath, kpattern)
 
 
+#this should simplify defining the keras utils path and file
+thefile = 'goodfile.txt'
+thepath = 'https://raw.githubusercontent.com/ChrisHarrold/ML-AI-Code/master/goodfile.txt'
+
 path_to_file = tf.keras.utils.get_file(thefile, thepath)
-print (path_to_file)
+#this isn't needed anymore, but the file ALWAYS comes from the local /root/.keras/datafiles dir
+#print (path_to_file)
+
+#Fun with unicode! This block strips out unicode information so you don't have blow-ups
+#on non-unicode. It flat DROPS the text, so if you want it, you need a better method
 trainingtext = open(path_to_file).read()
 trainingtext = ''.join(i for i in trainingtext if ord(i)<128)
-
 text = unidecode.unidecode(trainingtext)
 # length of text is the number of characters in it
-print (len(text))
+print ("The text is: "+ len(text))
 #not sure the purge is working? Uncomment to see what you are getting!
 #print (text)
 
@@ -145,7 +137,7 @@ def loss_function(real, preds):
 
 # Training step
 
-EPOCHS = 1
+EPOCHS = 10
 
 for epoch in range(EPOCHS):
     start = time.time()
@@ -172,8 +164,11 @@ for epoch in range(EPOCHS):
                                                             batch,
                                                             loss))
 
+    #for some unknown reason this throws errors about the 'loss' variable
+    #being undefined with the crappy training file. Commented out since it is just
+    # a counter and replaced with a simpler one that won't error
     #print ('Epoch {} Loss {:.4f}'.format(epoch+1, loss))
-    print('Time taken for 1 epoch {} sec\n'.format(time.time() - start))
+    print ('Epoch {} took {} seconds\n'.format(epoch+1),(time.time() - start))
     
 # Evaluation step(generating text using the model learned)
 
@@ -190,13 +185,10 @@ input_eval = tf.expand_dims(input_eval, 0)
 # empty string to store our results
 text_generated = ''
 
-<<<<<<< HEAD
 # low temperatures results in more predictable text.
 # higher temperatures results in more surprising text
 # experiment to find the best setting
 temperature = .7
-=======
->>>>>>> c26860c54f337285b0812c10efe4fc79bf063cde
 
 # hidden state shape == (batch_size, number of rnn units); here batch size == 1
 hidden = [tf.zeros((1, units))]
